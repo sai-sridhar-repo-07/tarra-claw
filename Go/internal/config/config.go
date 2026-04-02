@@ -7,17 +7,28 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config holds all runtime configuration for Tarra Claw.
+// Config holds all runtime configuration.
 type Config struct {
-	APIKey      string
-	Model       string
-	MaxTokens   int
-	Temperature float64
+	// Provider: "anthropic" or "ollama"
+	Provider string
+
+	// Anthropic settings
+	APIKey string
+
+	// Ollama settings
+	OllamaHost  string // default: http://localhost:11434
+	OllamaModel string // default: llama3.2
+
+	// Shared
+	Model        string
+	MaxTokens    int
+	Temperature  float64
 	SystemPrompt string
-	WorkingDir  string
-	Verbose     bool
-	AutoApprove bool // bypass permission prompts
-	MCPServers  []MCPServerConfig
+	WorkingDir   string
+	Verbose      bool
+	AutoApprove  bool
+
+	MCPServers []MCPServerConfig
 }
 
 type MCPServerConfig struct {
@@ -29,7 +40,6 @@ type MCPServerConfig struct {
 
 var global *Config
 
-// Init is called by cobra on startup.
 func Init() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -37,12 +47,14 @@ func Init() {
 	home, _ := os.UserHomeDir()
 	viper.AddConfigPath(filepath.Join(home, ".config", "tarra-claw"))
 	viper.AddConfigPath(".")
-
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("TARRA")
 
 	// Defaults
+	viper.SetDefault("provider", "")         // auto-detect
 	viper.SetDefault("model", "claude-opus-4-6")
+	viper.SetDefault("ollama_host", "http://localhost:11434")
+	viper.SetDefault("ollama_model", "llama3.2")
 	viper.SetDefault("max_tokens", 8096)
 	viper.SetDefault("temperature", 1.0)
 	viper.SetDefault("system_prompt", defaultSystemPrompt())
@@ -51,9 +63,30 @@ func Init() {
 
 	cwd, _ := os.Getwd()
 
+	apiKey := firstNonEmpty(viper.GetString("api_key"), os.Getenv("ANTHROPIC_API_KEY"))
+	provider := firstNonEmpty(viper.GetString("provider"), os.Getenv("TARRA_PROVIDER"))
+
+	// Auto-detect: if no API key, default to ollama
+	if provider == "" {
+		if apiKey != "" {
+			provider = "anthropic"
+		} else {
+			provider = "ollama"
+		}
+	}
+
+	ollamaModel := viper.GetString("ollama_model")
+	model := viper.GetString("model")
+	if provider == "ollama" {
+		model = ollamaModel
+	}
+
 	global = &Config{
-		APIKey:       firstNonEmpty(viper.GetString("api_key"), os.Getenv("ANTHROPIC_API_KEY")),
-		Model:        viper.GetString("model"),
+		Provider:     provider,
+		APIKey:       apiKey,
+		OllamaHost:   viper.GetString("ollama_host"),
+		OllamaModel:  ollamaModel,
+		Model:        model,
 		MaxTokens:    viper.GetInt("max_tokens"),
 		Temperature:  viper.GetFloat64("temperature"),
 		SystemPrompt: viper.GetString("system_prompt"),
@@ -63,7 +96,6 @@ func Init() {
 	}
 }
 
-// Get returns the global config, initializing if needed.
 func Get() *Config {
 	if global == nil {
 		Init()
@@ -83,5 +115,5 @@ func firstNonEmpty(vals ...string) string {
 func defaultSystemPrompt() string {
 	return `You are Tarra Claw, an AI coding agent. You have access to tools to read and write files,
 execute bash commands, search codebases, and more. Be concise, accurate, and helpful.
-Always think step by step. When you make changes to code, explain what you changed and why.`
+Think step by step. When you change code, explain what changed and why.`
 }

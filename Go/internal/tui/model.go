@@ -283,7 +283,7 @@ func (m *Model) View() string {
 
 	// Header
 	header := styleBanner.Render("  ⊕ Tarra Claw") +
-		styleDim.Render(fmt.Sprintf("  %s  ·  %s", m.cfg.Model, m.status))
+		styleDim.Render(fmt.Sprintf("  %s  ·  %s", m.eng.ProviderInfo(), m.status))
 	sb.WriteString(header + "\n")
 	sb.WriteString(styleDim.Render(strings.Repeat("─", m.width)) + "\n")
 

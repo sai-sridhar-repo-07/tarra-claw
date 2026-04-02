@@ -14,28 +14,7 @@ var chatCmd = &cobra.Command{
 	Use:   "chat [prompt]",
 	Short: "Start an interactive chat session (default mode)",
 	Args:  cobra.MaximumNArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		cfg := config.Get()
-
-		if cfg.APIKey == "" {
-			fmt.Fprintln(os.Stderr, "error: ANTHROPIC_API_KEY not set. Run: export ANTHROPIC_API_KEY=your-key")
-			os.Exit(1)
-		}
-
-		eng, err := engine.New(cfg)
-		if err != nil {
-			return fmt.Errorf("failed to initialize engine: %w", err)
-		}
-
-		// Non-interactive: single prompt passed as argument
-		if len(args) > 0 {
-			return eng.RunOnce(cmd.Context(), args[0])
-		}
-
-		// Interactive TUI mode
-		m := tui.New(eng, cfg)
-		return m.Run()
-	},
+	RunE:  runChat,
 }
 
 var runCmd = &cobra.Command{
@@ -46,14 +25,56 @@ var runCmd = &cobra.Command{
 		cfg := config.Get()
 		eng, err := engine.New(cfg)
 		if err != nil {
-			return err
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
 		}
 		return eng.RunOnce(cmd.Context(), args[0])
 	},
 }
 
+var modelsCmd = &cobra.Command{
+	Use:   "models",
+	Short: "List available Ollama models",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		cfg := config.Get()
+		models, err := listModels(cfg)
+		if err != nil {
+			return err
+		}
+		if len(models) == 0 {
+			fmt.Println("No models found. Pull one with: ollama pull llama3.2")
+			return nil
+		}
+		fmt.Println("Available models:")
+		for _, m := range models {
+			fmt.Println(" ", m)
+		}
+		return nil
+	},
+}
+
+func runChat(cmd *cobra.Command, args []string) error {
+	cfg := config.Get()
+
+	eng, err := engine.New(cfg)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "\n"+err.Error())
+		os.Exit(1)
+	}
+
+	// Single prompt passed as argument — non-interactive
+	if len(args) > 0 {
+		return eng.RunOnce(cmd.Context(), args[0])
+	}
+
+	// Interactive TUI
+	m := tui.New(eng, cfg)
+	return m.Run()
+}
+
 func init() {
 	rootCmd.AddCommand(chatCmd)
 	rootCmd.AddCommand(runCmd)
-	rootCmd.RunE = chatCmd.RunE // default command is chat
+	rootCmd.AddCommand(modelsCmd)
+	rootCmd.RunE = runChat
 }
