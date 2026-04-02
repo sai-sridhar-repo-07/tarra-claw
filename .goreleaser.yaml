@@ -4,7 +4,7 @@ project_name: claw
 
 before:
   hooks:
-    - go mod tidy
+    - sh -c "cd Go && go mod tidy"
 
 builds:
   - main: ./cmd/claw
@@ -24,16 +24,13 @@ builds:
         goarch: arm64
     ldflags:
       - -s -w
-      - -X main.version={{.Version}}
-      - -X main.commit={{.Commit}}
-      - -X main.date={{.Date}}
 
 archives:
-  - format: tar.gz
+  - formats: [tar.gz]
     name_template: "claw_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
     files:
       - README.md
       - LICENSE
@@ -51,18 +48,19 @@ release:
 
     AI agent CLI — works with **Ollama (free, no API key)** or Anthropic Claude.
 
-    ### Quick install
+    ### Install
 
-    **Mac (Homebrew)**
-    ```bash
-    brew install ollama
-    ollama serve & ollama pull llama3.2
-    ```
-    Then download the binary below for your platform.
+    Download the binary for your platform below, then:
 
-    **Go install**
     ```bash
-    go install github.com/sai-sridhar-repo-07/tarra-claw/Go/cmd/claw@latest
+    # Mac example
+    tar -xzf claw_{{.Version}}_darwin_arm64.tar.gz
+    sudo mv claw /usr/local/bin/
+
+    # Free local AI (no API key)
+    brew install ollama && ollama serve &
+    ollama pull llama3.2
+    claw
     ```
 
 changelog:
@@ -74,17 +72,3 @@ changelog:
       - "^ci:"
       - Merge pull request
       - Merge branch
-
-brews:
-  - name: claw
-    homepage: https://github.com/sai-sridhar-repo-07/tarra-claw
-    description: "AI agent CLI — Ollama (free) or Anthropic. Written in Go."
-    license: MIT
-    repository:
-      owner: sai-sridhar-repo-07
-      name: homebrew-claw
-      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
-    install: |
-      bin.install "claw"
-    test: |
-      system "#{bin}/claw", "--version"
