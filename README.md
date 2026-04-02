@@ -74,8 +74,8 @@
 <br/>
 
 ```bash
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.1_darwin_arm64.tar.gz \
-  | tar xz && sudo mv claw_v0.1.1_darwin_arm64 /usr/local/bin/claw
+curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.2.0_darwin_arm64.tar.gz \
+  | tar xz && sudo mv claw_v0.2.0_darwin_arm64 /usr/local/bin/claw
 ```
 
 </details>
@@ -85,8 +85,8 @@ curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/downlo
 <br/>
 
 ```bash
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.1_darwin_amd64.tar.gz \
-  | tar xz && sudo mv claw_v0.1.1_darwin_amd64 /usr/local/bin/claw
+curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.2.0_darwin_amd64.tar.gz \
+  | tar xz && sudo mv claw_v0.2.0_darwin_amd64 /usr/local/bin/claw
 ```
 
 </details>
@@ -96,8 +96,8 @@ curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/downlo
 <br/>
 
 ```bash
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.1_linux_amd64.tar.gz \
-  | tar xz && sudo mv claw_v0.1.1_linux_amd64 /usr/local/bin/claw
+curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.2.0_linux_amd64.tar.gz \
+  | tar xz && sudo mv claw_v0.2.0_linux_amd64 /usr/local/bin/claw
 ```
 
 </details>
@@ -106,7 +106,7 @@ curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/downlo
 <summary>&nbsp;&nbsp;<b>🪟 &nbsp;Windows</b></summary>
 <br/>
 
-1. Download [`claw_v0.1.1_windows_amd64.zip`](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest)
+1. Download [`claw_v0.2.0_windows_amd64.zip`](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest)
 2. Extract the zip
 3. Run `claw.exe` from any terminal
 
@@ -198,15 +198,15 @@ claw review --branch main # compare your branch vs main
 Output:
 ```
 ## Summary
-Adds getUserInput() and constructs an SQL query from user input.
+Adds getUserInput() and constructs a SQL query from user input.
 
 ## Issues Found
-- divide() has no divide-by-zero check → runtime panic
-- os.ReadFile() error is ignored → silent failure
-- SQL query built from raw user input → SQL injection vulnerability
+1. divide-by-zero — line 11: no zero check, causes runtime panic
+2. ignored error — line 17: os.ReadFile() error silently discarded
+3. SQL injection — line 23: string concatenation with user input is dangerous
 
 ## Verdict
-❌ Needs changes
+❌ Needs changes — has bugs or security issues that must be fixed
 ```
 
 **`claw commit`** — AI writes your commit message from staged changes

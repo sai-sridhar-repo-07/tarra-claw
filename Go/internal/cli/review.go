@@ -72,24 +72,35 @@ func runReview(cmd *cobra.Command, args []string) error {
 	lines := strings.Count(diff, "\n")
 	fmt.Printf("Reviewing %d lines of diff...\n\n", lines)
 
-	prompt := fmt.Sprintf(`You are an expert code reviewer. Review the following git diff carefully.
+	prompt := fmt.Sprintf(`You are a senior engineer doing a strict code review. Analyze this git diff line by line.
 
-Structure your review as:
+IMPORTANT: Be thorough. Do NOT say "looks good" if there are any of these present:
+- Division without zero check
+- Ignored errors (blank identifier _ on error)
+- SQL queries built with string concatenation (SQL injection)
+- Unchecked nil pointers
+- Missing bounds checks
+- Hardcoded secrets or paths
+- Race conditions
+
+Output EXACTLY this structure:
 
 ## Summary
-One sentence describing what this change does.
+One sentence: what does this change do?
 
 ## Issues Found
-List any bugs, security vulnerabilities, performance problems, or logic errors.
-If none, say "No issues found."
+List every bug, security hole, or error handling problem as a numbered list.
+For each issue include: what it is, which line, and why it's dangerous.
+If truly no issues: write "None."
 
 ## Suggestions
-Improvements to readability, naming, structure, or efficiency (non-blocking).
+Non-blocking style/readability improvements (optional).
 
 ## Verdict
-One of: ✅ Looks good  |  ⚠️ Minor issues  |  ❌ Needs changes
-
----
+Pick exactly one:
+- ✅ Looks good — no issues
+- ⚠️ Minor issues — works but has improvements needed
+- ❌ Needs changes — has bugs or security issues that must be fixed
 
 Git diff:
 %s`, diff)
