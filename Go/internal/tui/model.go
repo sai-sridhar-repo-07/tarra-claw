@@ -5,57 +5,30 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/sai-sridhar-repo-07/tarra-claw/internal/commands"
 	"github.com/sai-sridhar-repo-07/tarra-claw/internal/config"
 	"github.com/sai-sridhar-repo-07/tarra-claw/internal/engine"
 )
 
-// --- Styles ---
-
+// ── Styles ────────────────────────────────────────────────────────────────────
 var (
 	stylePrompt    = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("205"))
-	styleUser      = lipgloss.NewStyle().Foreground(lipgloss.Color("39"))
+	styleUser      = lipgloss.NewStyle().Foreground(lipgloss.Color("39")).Bold(true)
 	styleAssistant = lipgloss.NewStyle().Foreground(lipgloss.Color("252"))
 	styleTool      = lipgloss.NewStyle().Foreground(lipgloss.Color("214")).Italic(true)
 	styleError     = lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Bold(true)
 	styleStatus    = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
 	styleDim       = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
-	styleBorder    = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("238")).
-			Padding(0, 1)
+	styleBanner    = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("205"))
 )
 
-// --- Messages ---
-
+// ── Tea messages ──────────────────────────────────────────────────────────────
 type engineEventMsg engine.Event
-type engineDoneMsg struct{}
-type errMsg struct{ err error }
+type engineDoneMsg struct{ err error }
 
-// --- Model ---
-
-// Model is the Bubble Tea model for the interactive TUI.
-type Model struct {
-	eng        *engine.Engine
-	cfg        *config.Config
-	ctx        context.Context
-	cancel     context.CancelFunc
-	input      string
-	cursor     int
-	output     []outputLine
-	status     string
-	width      int
-	height     int
-	ready      bool
-	processing bool
-}
-
-type outputLine struct {
-	kind lineKind
-	text string
-}
-
+// ── Output lines ──────────────────────────────────────────────────────────────
 type lineKind int
 
 const (
@@ -67,43 +40,57 @@ const (
 	lineSystem
 )
 
-// New creates a new TUI Model.
+type outputLine struct {
+	kind lineKind
+	text string
+}
+
+// ── Model ─────────────────────────────────────────────────────────────────────
+type Model struct {
+	eng     *engine.Engine
+	cfg     *config.Config
+	cmds    *commands.Registry
+	ctx     context.Context
+	cancel  context.CancelFunc
+	program *tea.Program
+
+	input      string
+	cursor     int
+	output     []outputLine
+	history    []string // command history
+	histIdx    int
+	status     string
+	width      int
+	height     int
+	ready      bool
+	processing bool
+}
+
 func New(eng *engine.Engine, cfg *config.Config) *Model {
 	ctx, cancel := context.WithCancel(context.Background())
 	m := &Model{
 		eng:    eng,
 		cfg:    cfg,
+		cmds:   commands.New(),
 		ctx:    ctx,
 		cancel: cancel,
 		status: "ready",
 	}
-	eng.OnEvent(m.handleEngineEvent)
 	return m
 }
 
-// Run starts the Bubble Tea program.
 func (m *Model) Run() error {
+	// Wire engine events back to the tea program
+	eng := m.eng
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
+	m.program = p
+	eng.OnEvent(func(ev engine.Event) { p.Send(engineEventMsg(ev)) })
 	_, err := p.Run()
 	return err
 }
 
-// handleEngineEvent is called by the engine goroutine; sends msgs to tea.
-// We store the program reference to send messages cross-goroutine.
-var globalProgram *tea.Program
-
-func (m *Model) handleEngineEvent(ev engine.Event) {
-	if globalProgram == nil {
-		return
-	}
-	globalProgram.Send(engineEventMsg(ev))
-}
-
-// --- Bubble Tea interface ---
-
-func (m *Model) Init() tea.Cmd {
-	return nil
-}
+// ── Bubble Tea interface ───────────────────────────────────────────────────────
+func (m *Model) Init() tea.Cmd { return nil }
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
@@ -116,29 +103,29 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleKey(msg)
 
 	case engineEventMsg:
-		return m.handleEngineEvent2(engine.Event(msg))
+		return m.handleEngineEvent(engine.Event(msg))
 
 	case engineDoneMsg:
 		m.processing = false
-		m.status = "ready"
-
-	case errMsg:
-		m.processing = false
-		m.status = "error: " + msg.err.Error()
-		m.addLine(lineError, msg.err.Error())
+		if msg.err != nil {
+			m.addLine(lineError, msg.err.Error())
+			m.status = "error"
+		} else {
+			m.status = "ready"
+		}
 	}
-
 	return m, nil
 }
 
 func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.Type {
-	case tea.KeyCtrlC, tea.KeyEsc:
+	case tea.KeyCtrlC:
 		if m.processing {
 			m.cancel()
 			ctx, cancel := context.WithCancel(context.Background())
 			m.ctx = ctx
 			m.cancel = cancel
+			m.eng.OnEvent(func(ev engine.Event) { m.program.Send(engineEventMsg(ev)) })
 			m.processing = false
 			m.status = "cancelled"
 			return m, nil
@@ -152,7 +139,27 @@ func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		}
 		return m.submit()
 
-	case tea.KeyBackspace, tea.KeyDelete:
+	case tea.KeyUp:
+		if len(m.history) > 0 {
+			if m.histIdx < len(m.history) {
+				m.histIdx++
+			}
+			m.input = m.history[len(m.history)-m.histIdx]
+			m.cursor = len(m.input)
+		}
+
+	case tea.KeyDown:
+		if m.histIdx > 0 {
+			m.histIdx--
+			if m.histIdx == 0 {
+				m.input = ""
+			} else {
+				m.input = m.history[len(m.history)-m.histIdx]
+			}
+			m.cursor = len(m.input)
+		}
+
+	case tea.KeyBackspace:
 		if m.cursor > 0 {
 			m.input = m.input[:m.cursor-1] + m.input[m.cursor:]
 			m.cursor--
@@ -171,7 +178,7 @@ func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case tea.KeyCtrlE:
 		m.cursor = len(m.input)
 	case tea.KeyCtrlU:
-		m.input = m.input[m.cursor:]
+		m.input = ""
 		m.cursor = 0
 
 	default:
@@ -185,64 +192,74 @@ func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 func (m *Model) submit() (tea.Model, tea.Cmd) {
 	prompt := strings.TrimSpace(m.input)
+	m.history = append(m.history, prompt)
+	m.histIdx = 0
 	m.input = ""
 	m.cursor = 0
 
-	// Built-in slash commands
-	switch prompt {
-	case "/clear":
-		m.eng.ClearHistory()
-		m.output = nil
-		m.addLine(lineSystem, "Conversation cleared.")
-		return m, nil
-	case "/quit", "/exit":
-		return m, tea.Quit
-	case "/help":
-		m.addLine(lineSystem, helpText(m.eng))
+	// Try slash commands first
+	cmdEnv := &commands.Env{
+		WorkDir: m.cfg.WorkingDir,
+		ClearFn: func() {
+			m.eng.ClearHistory()
+			m.output = nil
+		},
+		GetCost:   func() string { return m.eng.CostSummary() },
+		ListTools: func() []string { return m.eng.Registry().Names() },
+	}
+
+	out, matched, err := m.cmds.Execute(m.ctx, prompt, cmdEnv)
+	if matched {
+		if err != nil {
+			m.addLine(lineError, err.Error())
+		} else if out == "exit" {
+			return m, tea.Quit
+		} else if out != "" {
+			m.addLine(lineSystem, out)
+		}
 		return m, nil
 	}
 
 	m.addLine(lineUser, prompt)
 	m.processing = true
-	m.status = "thinking..."
+	m.status = "thinking…"
 
-	return m, m.runPrompt(prompt)
-}
-
-func (m *Model) runPrompt(prompt string) tea.Cmd {
-	return func() tea.Msg {
+	return m, func() tea.Msg {
 		err := m.eng.Send(m.ctx, prompt)
-		if err != nil {
-			return errMsg{err}
-		}
-		return engineDoneMsg{}
+		return engineDoneMsg{err: err}
 	}
 }
 
-func (m *Model) handleEngineEvent2(ev engine.Event) (tea.Model, tea.Cmd) {
+func (m *Model) handleEngineEvent(ev engine.Event) (tea.Model, tea.Cmd) {
 	switch ev.Type {
 	case engine.EventAssistantText:
-		m.appendToLastAssistant(ev.Text)
+		m.appendAssistant(ev.Text)
 	case engine.EventToolStart:
-		m.addLine(lineTool, fmt.Sprintf("  %s %v", ev.Tool, formatInput(ev.Input)))
-		m.status = fmt.Sprintf("running %s...", ev.Tool)
+		label := fmt.Sprintf("⚙ %s", ev.Tool)
+		if cmd, ok := ev.Input["command"].(string); ok {
+			label += fmt.Sprintf("  %s", truncate(cmd, 60))
+		} else if path, ok := ev.Input["file_path"].(string); ok {
+			label += fmt.Sprintf("  %s", path)
+		}
+		m.addLine(lineTool, label)
+		m.status = fmt.Sprintf("running %s…", ev.Tool)
 	case engine.EventToolResult:
 		if ev.IsError {
-			m.addLine(lineError, "  "+truncate(ev.Result, 200))
+			m.addLine(lineError, "  ✗ "+truncate(ev.Result, 200))
 		} else {
-			m.addLine(lineToolResult, "  "+truncate(ev.Result, 200))
+			m.addLine(lineToolResult, "  ✓ "+truncate(ev.Result, 200))
 		}
 	case engine.EventError:
 		m.addLine(lineError, ev.Text)
 	case engine.EventDone:
 		if ev.Usage != nil {
-			m.status = fmt.Sprintf("ready  [in:%d out:%d]", ev.Usage.InputTokens, ev.Usage.OutputTokens)
+			m.status = fmt.Sprintf("ready  ·  in:%d out:%d", ev.Usage.InputTokens, ev.Usage.OutputTokens)
 		}
 	}
 	return m, nil
 }
 
-func (m *Model) appendToLastAssistant(text string) {
+func (m *Model) appendAssistant(text string) {
 	for i := len(m.output) - 1; i >= 0; i-- {
 		if m.output[i].kind == lineAssistant {
 			m.output[i].text += text
@@ -256,45 +273,47 @@ func (m *Model) addLine(kind lineKind, text string) {
 	m.output = append(m.output, outputLine{kind: kind, text: text})
 }
 
-// View renders the TUI.
+// ── View ──────────────────────────────────────────────────────────────────────
 func (m *Model) View() string {
 	if !m.ready {
-		return "initializing..."
+		return "  Starting Tarra Claw…"
 	}
 
 	var sb strings.Builder
 
 	// Header
-	header := stylePrompt.Render("  Tarra Claw") + styleDim.Render(fmt.Sprintf("  %s", m.cfg.Model))
+	header := styleBanner.Render("  ⊕ Tarra Claw") +
+		styleDim.Render(fmt.Sprintf("  %s  ·  %s", m.cfg.Model, m.status))
 	sb.WriteString(header + "\n")
-	sb.WriteString(strings.Repeat("─", m.width) + "\n")
+	sb.WriteString(styleDim.Render(strings.Repeat("─", m.width)) + "\n")
 
 	// Output area
 	outputHeight := m.height - 5
-	lines := m.renderOutput()
-	if len(lines) > outputHeight {
-		lines = lines[len(lines)-outputHeight:]
+	rendered := m.renderOutput()
+	if len(rendered) > outputHeight {
+		rendered = rendered[len(rendered)-outputHeight:]
 	}
-	for _, l := range lines {
+	for _, l := range rendered {
 		sb.WriteString(l + "\n")
 	}
-
-	// Fill remaining space
-	rendered := len(lines)
-	for i := rendered; i < outputHeight; i++ {
+	for i := len(rendered); i < outputHeight; i++ {
 		sb.WriteString("\n")
 	}
 
-	// Status bar
-	sb.WriteString(strings.Repeat("─", m.width) + "\n")
+	// Footer
+	sb.WriteString(styleDim.Render(strings.Repeat("─", m.width)) + "\n")
 
-	// Input line
-	inputDisplay := m.input[:m.cursor] + "█" + m.input[m.cursor:]
+	// Input
+	var inputView string
 	if m.processing {
-		inputDisplay = styleStatus.Render("processing... (Ctrl+C to cancel)")
+		inputView = styleDim.Render("  processing… (Ctrl+C to cancel)")
+	} else {
+		before := m.input[:m.cursor]
+		cursor := "█"
+		after := m.input[m.cursor:]
+		inputView = stylePrompt.Render(" › ") + before + cursor + after
 	}
-	sb.WriteString(stylePrompt.Render(" > ") + inputDisplay + "\n")
-	sb.WriteString(styleStatus.Render(fmt.Sprintf("  %s", m.status)))
+	sb.WriteString(inputView)
 
 	return sb.String()
 }
@@ -304,45 +323,24 @@ func (m *Model) renderOutput() []string {
 	for _, ol := range m.output {
 		switch ol.kind {
 		case lineUser:
-			lines = append(lines, styleUser.Render(" > "+ol.text))
+			lines = append(lines, styleUser.Render(" › ")+ol.text)
 		case lineAssistant:
 			for _, l := range strings.Split(ol.text, "\n") {
 				lines = append(lines, styleAssistant.Render("   "+l))
 			}
 		case lineTool:
-			lines = append(lines, styleTool.Render(ol.text))
+			lines = append(lines, styleTool.Render("   "+ol.text))
 		case lineToolResult:
-			lines = append(lines, styleDim.Render(ol.text))
-		case lineError:
-			lines = append(lines, styleError.Render("   ✗ "+ol.text))
-		case lineSystem:
 			lines = append(lines, styleDim.Render("   "+ol.text))
+		case lineError:
+			lines = append(lines, styleError.Render("   "+ol.text))
+		case lineSystem:
+			for _, l := range strings.Split(ol.text, "\n") {
+				lines = append(lines, styleDim.Render("   "+l))
+			}
 		}
 	}
 	return lines
-}
-
-func helpText(eng *engine.Engine) string {
-	tools := eng.Registry().All()
-	names := make([]string, len(tools))
-	for i, t := range tools {
-		names[i] = t.Name()
-	}
-	return fmt.Sprintf(
-		"Commands: /clear /help /quit\nTools: %s\nCtrl+C: cancel / exit",
-		strings.Join(names, ", "),
-	)
-}
-
-func formatInput(input map[string]any) string {
-	if len(input) == 0 {
-		return ""
-	}
-	var parts []string
-	for k, v := range input {
-		parts = append(parts, fmt.Sprintf("%s=%v", k, truncate(fmt.Sprint(v), 40)))
-	}
-	return strings.Join(parts, " ")
 }
 
 func truncate(s string, n int) string {

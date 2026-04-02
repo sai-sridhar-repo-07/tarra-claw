@@ -7,7 +7,6 @@ dist/
 
 # Go
 vendor/
-go.sum
 
 # Config (may contain API keys)
 .env

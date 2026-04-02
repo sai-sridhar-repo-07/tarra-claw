@@ -9,6 +9,7 @@ import (
 	"github.com/sai-sridhar-repo-07/tarra-claw/internal/api"
 	"github.com/sai-sridhar-repo-07/tarra-claw/internal/config"
 	"github.com/sai-sridhar-repo-07/tarra-claw/internal/tools"
+	"github.com/sai-sridhar-repo-07/tarra-claw/internal/cost"
 )
 
 // Engine orchestrates the AI query loop with tool execution.
@@ -17,6 +18,7 @@ type Engine struct {
 	registry *tools.Registry
 	cfg      *config.Config
 	history  []anthropic.MessageParam
+	cost     *cost.Session
 	onEvent  func(Event)
 }
 
@@ -50,6 +52,7 @@ func New(cfg *config.Config) (*Engine, error) {
 	return &Engine{
 		client:   client,
 		registry: tools.DefaultRegistry(cfg.WorkingDir),
+		cost:     cost.New(cfg.Model),
 		cfg:      cfg,
 	}, nil
 }
@@ -154,7 +157,7 @@ func (e *Engine) step(ctx context.Context) (bool, error) {
 		contentBlocks = append(contentBlocks, anthropic.NewTextBlock(assistantText.String()))
 	}
 	for _, tc := range toolCalls {
-		contentBlocks = append(contentBlocks, anthropic.NewToolUseBlock(tc.id, tc.name, tc.input))
+		contentBlocks = append(contentBlocks, anthropic.NewToolUseBlockParam(tc.id, tc.name, tc.input))
 	}
 	if len(contentBlocks) > 0 {
 		e.history = append(e.history, anthropic.NewAssistantMessage(contentBlocks...))
@@ -241,4 +244,12 @@ func (e *Engine) ClearHistory() {
 // Registry returns the tool registry (for /help, skill listing).
 func (e *Engine) Registry() *tools.Registry {
 	return e.registry
+}
+
+// CostSummary returns a human-readable cost/usage string.
+func (e *Engine) CostSummary() string {
+	if e.cost == nil {
+		return "no cost data"
+	}
+	return e.cost.Summary()
 }
