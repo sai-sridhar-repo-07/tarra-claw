@@ -180,9 +180,54 @@ Force a provider anytime: `TARRA_PROVIDER=ollama claw`
 ## 💬 Usage
 
 ```bash
-claw                                  # open interactive chat
-claw run "explain what this repo does"# one-shot task, auto-exits
-claw models                           # list available AI models
+claw                                     # open interactive chat
+claw run "explain what this repo does"   # one-shot task, auto-exits
+claw models                              # list available AI models
+```
+
+### 🔍 Unique Commands (not in Claude Code)
+
+**`claw review`** — AI reviews your git diff and finds bugs before you commit
+
+```bash
+claw review              # review all current changes
+claw review --staged     # review only staged changes
+claw review --branch main # compare your branch vs main
+```
+
+Output:
+```
+## Summary
+Adds getUserInput() and constructs an SQL query from user input.
+
+## Issues Found
+- divide() has no divide-by-zero check → runtime panic
+- os.ReadFile() error is ignored → silent failure
+- SQL query built from raw user input → SQL injection vulnerability
+
+## Verdict
+❌ Needs changes
+```
+
+**`claw commit`** — AI writes your commit message from staged changes
+
+```bash
+git add .
+claw commit
+```
+
+Output:
+```
+─────────────────────────────────
+fix: add input validation and SQL injection protection
+
+- Replace string concatenation in SQL query with parameterized query
+- Add error handling for os.ReadFile() calls
+- Add divide-by-zero guard in divide()
+─────────────────────────────────
+
+To use it:
+  git commit -m "<paste message above>"
 ```
 
 <br/>
