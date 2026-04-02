@@ -107,6 +107,28 @@ func (e *Engine) RunOnce(ctx context.Context, prompt string) error {
 	return e.Send(ctx, prompt)
 }
 
+// RunOnceDirect sends a prompt without tools — clean text output only.
+// Used for review, commit, and other single-shot analysis commands.
+func (e *Engine) RunOnceDirect(ctx context.Context, prompt string) error {
+	e.history = append(e.history, anthropic.NewUserMessage(anthropic.NewTextBlock(prompt)))
+
+	stream := e.provider.Stream(ctx, e.history, nil, "You are a helpful assistant. Be concise and direct.")
+	for ev := range stream {
+		switch ev.Type {
+		case api.EventTextDelta:
+			fmt.Print(ev.Text)
+		case api.EventDone:
+			fmt.Println()
+			if ev.Usage != nil {
+				fmt.Printf("\n[%s · in:%d out:%d]\n", e.provider.Name(), ev.Usage.InputTokens, ev.Usage.OutputTokens)
+			}
+		case api.EventError:
+			return ev.Err
+		}
+	}
+	return nil
+}
+
 // Send adds a user message and runs the full agentic loop.
 func (e *Engine) Send(ctx context.Context, userMessage string) error {
 	e.history = append(e.history, anthropic.NewUserMessage(anthropic.NewTextBlock(userMessage)))
