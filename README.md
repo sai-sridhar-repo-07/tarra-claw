@@ -1,46 +1,62 @@
-# Tarra Claw
+<div align="center">
 
-> AI agent CLI in Go — works free with Ollama (no API key) or with Anthropic Claude.
+# 🦀 Tarra Claw
 
-**What Claude Code would look like if it were built in Go. Concurrent. Single binary. Free.**
+### AI coding agent CLI — built in Go. Fast, free, and offline-capable.
+
+[![Build](https://github.com/sai-sridhar-repo-07/tarra-claw/actions/workflows/build.yml/badge.svg)](https://github.com/sai-sridhar-repo-07/tarra-claw/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/sai-sridhar-repo-07/tarra-claw?color=brightgreen)](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest)
+[![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Platforms](https://img.shields.io/badge/platform-Mac%20%7C%20Linux%20%7C%20Windows-lightgrey)](#install)
+
+**What Claude Code would look like if it were built in Go.**  
+Single binary. 16MB. Starts in 50ms. Works 100% offline with Ollama — no API key needed.
+
+![Tarra Claw Demo](docs/demo.gif)
+
+[Install](#install) · [Quick Start](#quick-start) · [Tools](#built-in-tools) · [Config](#configuration) · [Why Go?](#why-go)
+
+</div>
+
+---
+
+## What is this?
+
+Tarra Claw is an open-source AI agent you run in your terminal. Give it a task — it reads your files, runs commands, searches your codebase, fetches URLs, and gets it done. Like Claude Code or Cursor, but:
+
+- **Free** — use Ollama with local AI models (zero cost, no account needed)
+- **Private** — your code never leaves your machine when using Ollama
+- **Fast** — single Go binary, no Node.js, no 200MB install, starts instantly
+- **Flexible** — switch to Anthropic Claude when you need more power
 
 ---
 
 ## Install
 
-### Option 1 — One-liner (Mac/Linux)
+### One-liner (Mac/Linux)
 
 ```bash
-# Mac (Apple Silicon — M1/M2/M3/M4)
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.0_darwin_arm64.tar.gz | tar xz && sudo mv claw_v0.1.0_darwin_arm64 /usr/local/bin/claw
+# Mac — Apple Silicon (M1/M2/M3/M4)
+curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.1_darwin_arm64.tar.gz | tar xz && sudo mv claw_v0.1.1_darwin_arm64 /usr/local/bin/claw
 
-# Mac (Intel)
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.0_darwin_amd64.tar.gz | tar xz && sudo mv claw_v0.1.0_darwin_amd64 /usr/local/bin/claw
+# Mac — Intel
+curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.1_darwin_amd64.tar.gz | tar xz && sudo mv claw_v0.1.1_darwin_amd64 /usr/local/bin/claw
 
-# Linux (x64)
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.0_linux_amd64.tar.gz | tar xz && sudo mv claw_v0.1.0_linux_amd64 /usr/local/bin/claw
+# Linux — x64
+curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.1_linux_amd64.tar.gz | tar xz && sudo mv claw_v0.1.1_linux_amd64 /usr/local/bin/claw
 ```
 
-Verify it works:
 ```bash
-claw version
+# Verify
+claw --version
 ```
 
-### Option 2 — Download manually
+### Windows
 
-Go to [**Releases**](https://github.com/sai-sridhar-repo-07/tarra-claw/releases) and pick your platform:
+Download `claw_v0.1.1_windows_amd64.zip` from [Releases](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest), extract, and run `claw.exe`.
 
-| Platform | File |
-|---|---|
-| Mac Apple Silicon (M1/M2/M3) | `claw_v0.1.0_darwin_arm64.tar.gz` |
-| Mac Intel | `claw_v0.1.0_darwin_amd64.tar.gz` |
-| Linux x64 | `claw_v0.1.0_linux_amd64.tar.gz` |
-| Linux ARM | `claw_v0.1.0_linux_arm64.tar.gz` |
-| Windows | `claw_v0.1.0_windows_amd64.zip` |
-
-**Windows:** Extract the `.zip`, then run `claw.exe` from a terminal.
-
-### Option 3 — Build from source (requires Go 1.22+)
+### Build from source (requires Go 1.22+)
 
 ```bash
 git clone https://github.com/sai-sridhar-repo-07/tarra-claw.git
@@ -51,148 +67,150 @@ sudo mv claw /usr/local/bin/
 
 ---
 
-## Quick Start — Free with Ollama (no API key)
+## Quick Start
 
-Ollama runs the AI model **100% on your machine**. No internet required after setup. No cost. Ever.
+### Option A — Free with Ollama (no account, no API key, fully offline)
 
 ```bash
-# Step 1: Install Ollama
-brew install ollama                           # Mac
+# 1. Install Ollama
+brew install ollama                     # Mac
 # Linux: curl -fsSL https://ollama.com/install.sh | sh
 
-# Step 2: Start Ollama and pull a model
+# 2. Start Ollama + pull a model
 ollama serve &
-ollama pull llama3.2                          # lightweight (2GB), good for general use
-# or for coding:
-ollama pull qwen2.5-coder                     # best for code tasks (4GB)
+ollama pull llama3.2                    # 2GB — fast general use
+# or: ollama pull qwen2.5-coder        # 4GB — best for coding
 
-# Step 3: Run
+# 3. Run Tarra Claw
 claw
 ```
 
-You'll see `ollama · llama3.2` in the header confirming it's running locally.
+> The header shows `ollama · llama3.2` — your AI is running 100% on your machine.
 
----
-
-## Quick Start — Anthropic Claude
+### Option B — Anthropic Claude (more powerful, requires API key)
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 claw
 ```
 
-Tarra Claw auto-detects which backend to use:
-- **No API key set** → uses Ollama (free, local)
-- **`ANTHROPIC_API_KEY` set** → uses Anthropic Claude
-
-You can also force a provider:
-```bash
-TARRA_PROVIDER=ollama claw         # always use Ollama
-TARRA_PROVIDER=anthropic claw      # always use Anthropic
-```
+**Auto-detection:** If `ANTHROPIC_API_KEY` is set → uses Claude. If not → uses Ollama free.  
+You can override: `TARRA_PROVIDER=ollama claw` or `TARRA_PROVIDER=anthropic claw`
 
 ---
 
 ## Usage
 
 ```bash
-claw                          # open interactive chat (default)
-claw run "explain this repo"  # one-shot prompt, exits when done
-claw models                   # list available models
-claw --help                   # all commands
+claw                           # open interactive chat (default)
+claw run "fix the bug in main.go"   # one-shot, exits when done
+claw models                    # list available models
+claw --help                    # all flags
 ```
 
-### Inside the chat
-
-Just type and press **Enter**. The AI can read your files, run commands, search code — it has full tool access.
+### Keyboard shortcuts
 
 | Key | Action |
-|---|---|
+|-----|--------|
 | `Enter` | Send message |
-| `↑` / `↓` | Browse previous messages |
+| `↑` / `↓` | Navigate message history |
 | `Ctrl+A` | Jump to start of input |
 | `Ctrl+E` | Jump to end of input |
 | `Ctrl+U` | Clear input |
-| `Ctrl+C` | Cancel current operation / exit |
+| `Ctrl+C` | Cancel / exit |
 
-### Slash commands (type inside chat)
+### Slash commands
 
-| Command | What it does |
-|---|---|
+| Command | Description |
+|---------|-------------|
 | `/clear` | Clear conversation history |
-| `/cost` | Show token usage and estimated cost |
+| `/cost` | Show token usage and cost |
 | `/tools` | List all available tools |
 | `/model <name>` | Switch model mid-session |
-| `/help` | Show all slash commands |
+| `/help` | Show all commands |
 | `/exit` | Quit |
-
----
-
-## Configuration
-
-Optional. Create `~/.config/tarra-claw/config.yaml`:
-
-```yaml
-# Force a provider (auto-detected if not set)
-provider: ollama              # or "anthropic"
-
-# Ollama
-ollama_host: http://localhost:11434
-ollama_model: qwen2.5-coder   # change this to any model you've pulled
-
-# Anthropic (only needed if not using env var)
-# api_key: sk-ant-...
-# model: claude-opus-4-6
-
-max_tokens: 8096
-auto_approve: false           # set true to skip tool permission prompts
-```
 
 ---
 
 ## Built-in Tools
 
-The AI can use these tools on your behalf (it will ask permission first):
+The AI has access to these tools and will ask your permission before using them:
 
 | Tool | What it does |
-|---|---|
-| `Bash` | Run shell commands |
+|------|-------------|
+| `Bash` | Run shell commands in your terminal |
 | `Read` | Read files with line numbers |
 | `Write` | Create or overwrite files |
-| `Edit` | Precise string replacement in files |
+| `Edit` | Precise find-and-replace inside files |
 | `Glob` | Find files by pattern (`**/*.go`) |
-| `Grep` | Search inside files (ripgrep-powered) |
+| `Grep` | Search file contents with regex |
 | `LS` | List directory contents |
 | `WebFetch` | Fetch and read any URL |
 | `AskUserQuestion` | Ask you for input mid-task |
-| `TodoWrite` | Manage task lists |
-| `TaskCreate/List/Get/Stop` | Run and manage background tasks |
+| `TodoWrite` | Manage task checklists |
+| `TaskCreate/List/Get/Stop` | Manage background tasks |
 | `NotebookEdit` | Edit Jupyter notebook cells |
 
 ---
 
-## Best Models for Ollama
+## Configuration
 
-```bash
-ollama pull llama3.2              # 2GB — lightest, fast, good general use
-ollama pull qwen2.5-coder:7b      # 4GB — best for coding tasks
-ollama pull mistral               # 4GB — fast, balanced
-ollama pull deepseek-coder-v2     # 8GB — most capable for code
+Optional — create `~/.config/tarra-claw/config.yaml`:
+
+```yaml
+# Provider: "ollama" or "anthropic" (auto-detected if not set)
+provider: ollama
+
+# Ollama settings
+ollama_host: http://localhost:11434
+ollama_model: qwen2.5-coder          # any model you've pulled
+
+# Anthropic (if using Claude)
+# api_key: sk-ant-...
+# model: claude-opus-4-6
+
+max_tokens: 8096
+auto_approve: false                   # true = skip permission prompts
 ```
 
-Pick based on your RAM. 8GB RAM → use llama3.2. 16GB+ → qwen2.5-coder.
+Or just use environment variables — no config file needed:
+
+```bash
+TARRA_PROVIDER=ollama claw
+TARRA_OLLAMA_MODEL=mistral claw
+ANTHROPIC_API_KEY=sk-ant-... claw
+```
+
+---
+
+## Choosing an Ollama Model
+
+| Model | Size | Best for |
+|-------|------|----------|
+| `llama3.2` | 2GB | General chat, quick answers |
+| `mistral` | 4GB | Balanced speed + quality |
+| `qwen2.5-coder:7b` | 4GB | **Coding tasks** (recommended) |
+| `deepseek-coder-v2` | 8GB | Complex code, large files |
+
+```bash
+ollama pull qwen2.5-coder    # install a model
+ollama list                  # see what you have
+```
+
+> Pick based on your RAM. 8GB RAM → `llama3.2`. 16GB+ → `qwen2.5-coder`.
 
 ---
 
 ## Why Go?
 
 | | Claude Code (TypeScript) | Tarra Claw (Go) |
-|---|---|---|
+|--|--|--|
 | Startup time | ~2 seconds | < 50ms |
-| Requires API key | Yes (always) | No — works free with Ollama |
-| Runs offline | No | Yes |
-| Binary size | 200MB+ (includes Node.js) | ~16MB |
-| Install | `npm install -g` | Single file download |
+| Binary size | 200MB+ (needs Node.js) | **16MB** single file |
+| Requires API key | Yes, always | **No** — free with Ollama |
+| Runs offline | No | **Yes** |
+| Install method | `npm install -g` | Download one file |
+| Privacy | Code sent to Anthropic | **Stays on your machine** |
 
 ---
 
@@ -214,9 +232,22 @@ Go/
     ├── mcp/              MCP protocol client
     ├── memory/           Auto-memory system
     ├── permissions/      Tool permission engine
-    ├── state/            Reactive app state
     ├── tasks/            Background task registry
     └── compact/          Context compaction
+```
+
+**Built with:** [Bubble Tea](https://github.com/charmbracelet/bubbletea) · [Lip Gloss](https://github.com/charmbracelet/lipgloss) · [Cobra](https://github.com/spf13/cobra) · [Anthropic Go SDK](https://github.com/anthropics/anthropic-sdk-go) · [MCP Go](https://github.com/mark3labs/mcp-go)
+
+---
+
+## Contributing
+
+PRs welcome. To run locally:
+
+```bash
+git clone https://github.com/sai-sridhar-repo-07/tarra-claw.git
+cd tarra-claw/Go
+go run ./cmd/claw
 ```
 
 ---
@@ -224,3 +255,9 @@ Go/
 ## License
 
 MIT — free to use, modify, and distribute.
+
+---
+
+<div align="center">
+Made with Go · <a href="https://github.com/sai-sridhar-repo-07/tarra-claw/releases">Download latest release</a>
+</div>
