@@ -8,7 +8,7 @@
 /_/    \____/_/ |_|\____/_____/
 ```
 
-**AI coding agent for your terminal — built in Go**
+**Catch bugs before you commit. Write commit messages automatically.**
 
 [![Build](https://github.com/sai-sridhar-repo-07/tarra-claw/actions/workflows/build.yml/badge.svg)](https://github.com/sai-sridhar-repo-07/tarra-claw/actions)
 [![Release](https://img.shields.io/github/v/release/sai-sridhar-repo-07/tarra-claw?color=6ee7b7&label=latest)](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest)
@@ -20,47 +20,52 @@
 
 ![Demo](docs/demo.gif)
 
-<br/>
-
-> **Give it a task. It reads your files, runs commands, searches your code, and gets it done.**
-> Like Claude Code — but free, offline, and a single 16MB binary.
-
 </div>
 
 ---
 
-## ✨ Why Forge?
+## The two commands you'll use every day
 
-<table>
-<tr>
-<td width="25%" align="center"><br/><b>🆓 Completely Free</b><br/><br/>Use Ollama — AI runs on your machine. No account. No API key. No cost. Ever.<br/><br/></td>
-<td width="25%" align="center"><br/><b>🔒 Private by Default</b><br/><br/>Your code never leaves your machine when using Ollama. Perfect for companies with NDAs.<br/><br/></td>
-<td width="25%" align="center"><br/><b>⚡ Instant Startup</b><br/><br/>50ms cold start. No Node.js runtime. One binary, drop it anywhere and run.<br/><br/></td>
-<td width="25%" align="center"><br/><b>🔌 Dual Backend</b><br/><br/>Switch between free local Ollama and powerful Anthropic Claude with one env var.<br/><br/></td>
-</tr>
-</table>
+### `forge review` — AI finds bugs in your code before you commit
 
----
+```bash
+forge review --staged
+```
 
-## 📊 How It Compares
+```
+## Issues Found
+1. divide-by-zero — line 11: no zero check, causes runtime panic
+2. ignored error  — line 17: os.ReadFile() error silently discarded
+3. SQL injection   — line 23: string concatenation with user input is dangerous
 
-<div align="center">
+## Verdict
+❌ Needs changes — has bugs or security issues that must be fixed
+```
 
-|  | Claude Code | Copilot CLI | **Forge** |
-|--|:--:|:--:|:--:|
-| Needs API key | ✅ | ✅ | ❌ **No** |
-| Works offline | ❌ | ❌ | ✅ **Yes** |
-| Code stays private | ❌ | ❌ | ✅ **Yes** |
-| Startup time | ~2s | ~2s | **< 50ms** |
-| Install size | 200MB | 150MB | **16MB** |
-| Cost | $$ / token | $$ / month | **Free** |
-| Language | TypeScript | TypeScript | **Go** |
-
-</div>
+Run it before every `git commit`. Catches what you miss.
 
 ---
 
-## 📥 Install
+### `forge commit` — AI writes your commit message
+
+```bash
+git add .
+forge commit
+```
+
+```
+fix: add input validation and SQL injection protection
+
+- Replace string concatenation in SQL query with parameterized query
+- Add error handling for os.ReadFile() calls
+- Add divide-by-zero guard in divide()
+```
+
+No more staring at the terminal thinking what to write.
+
+---
+
+## Install
 
 <details open>
 <summary>&nbsp;&nbsp;<b>🍎 &nbsp;Mac — Apple Silicon (M1 / M2 / M3 / M4)</b></summary>
@@ -99,9 +104,7 @@ curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/downlo
 <summary>&nbsp;&nbsp;<b>🪟 &nbsp;Windows</b></summary>
 <br/>
 
-1. Download [`forge_v0.3.0_windows_amd64.zip`](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest)
-2. Extract the zip
-3. Run `forge.exe` from any terminal
+Download [`forge_v0.3.0_windows_amd64.zip`](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest) → extract → run `forge.exe`
 
 </details>
 
@@ -118,130 +121,93 @@ sudo mv forge /usr/local/bin/
 
 </details>
 
-<br/>
-
 ```bash
-forge --version   # ✓ verify install
+forge --version   # verify install
 ```
 
 ---
 
-## 🚀 Quick Start
+## Quick Start — get running in 60 seconds
 
-### 🆓 Option A — Free with Ollama (no account, works offline)
-
-```bash
-# 1. Install Ollama
-brew install ollama                              # Mac
-curl -fsSL https://ollama.com/install.sh | sh   # Linux
-
-# 2. Pull a model
-ollama serve &
-ollama pull llama3.2          # 2GB · good starting point
-# ollama pull qwen2.5-coder   # 4GB · best for coding
-
-# 3. Run
-forge
-```
-
-> The header shows **`ollama · llama3.2`** — AI is running 100% on your machine.
-
-### ⚡ Option B — Anthropic Claude (more powerful)
+### With Anthropic Claude (recommended to start)
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-forge
+forge review --staged   # done. that's it.
 ```
 
-**Auto-detection** — Forge picks the right backend automatically:
+Get a free API key at [console.anthropic.com](https://console.anthropic.com) — costs cents per review.
 
-```
-No ANTHROPIC_API_KEY set  →  Ollama  (free, local)
-ANTHROPIC_API_KEY is set  →  Claude  (Anthropic API)
+### With Ollama (free, runs on your machine)
+
+```bash
+brew install ollama && ollama serve &
+ollama pull llama3.2
+forge review --staged
 ```
 
-Override anytime: `FORGE_PROVIDER=ollama forge`
+**Auto-detection:** no API key set → uses Ollama free. API key set → uses Claude.
 
 ---
 
-## 💬 Usage
+## More commands
 
 ```bash
-forge                                      # open interactive chat
+forge                                      # full AI coding agent — interactive chat
 forge run "explain what this repo does"    # one-shot task, exits when done
+forge review --branch main                 # compare your branch vs main
 forge models                               # list available AI models
-forge --help                               # all commands
 ```
 
-### 🔍 Unique Commands — not in Claude Code
-
-**`forge review`** — AI reviews your git diff and finds bugs before you commit
-
-```bash
-forge review                # review all current changes
-forge review --staged       # review only staged changes
-forge review --branch main  # compare your branch vs main
-```
-
-Example output:
-```
-## Summary
-Adds getUserInput() and constructs a SQL query from user input.
-
-## Issues Found
-1. divide-by-zero — line 11: no zero check, causes runtime panic
-2. ignored error  — line 17: os.ReadFile() error silently discarded
-3. SQL injection   — line 23: string concatenation with user input is dangerous
-
-## Verdict
-❌ Needs changes — has bugs or security issues that must be fixed
-```
+Forge is also a full AI coding agent. Ask it to fix bugs, explain code, search files, run commands — it does all of it with your permission.
 
 ---
 
-**`forge commit`** — AI writes your git commit message from staged changes
+## ✨ Why Forge over Claude Code?
 
-```bash
-git add .
-forge commit
-```
-
-Example output:
-```
-─────────────────────────────────
-fix: add input validation and SQL injection protection
-
-- Replace string concatenation in SQL query with parameterized query
-- Add error handling for os.ReadFile() calls
-- Add divide-by-zero guard in divide()
-─────────────────────────────────
-
-To use it:
-  git commit -m "<paste message above>"
-```
+<table>
+<tr>
+<td width="25%" align="center"><br/><b>🎯 forge review</b><br/><br/>Structured bug report from your git diff. SQL injection, ignored errors, logic bugs — before they hit production.<br/><br/></td>
+<td width="25%" align="center"><br/><b>✍️ forge commit</b><br/><br/>AI reads your staged changes and writes a proper conventional commit message. One command.<br/><br/></td>
+<td width="25%" align="center"><br/><b>⚡ 16MB binary</b><br/><br/>No Node.js. No npm install. Download one file, run it. Starts in 50ms.<br/><br/></td>
+<td width="25%" align="center"><br/><b>🔒 Works offline</b><br/><br/>Switch to Ollama and your code never leaves your machine. Perfect for private or company projects.<br/><br/></td>
+</tr>
+</table>
 
 ---
 
-### ⌨️ Keyboard Shortcuts
+## 📊 Comparison
+
+<div align="center">
+
+|  | Claude Code | Copilot CLI | **Forge** |
+|--|:--:|:--:|:--:|
+| `review` command | ❌ | ❌ | ✅ |
+| `commit` command | ❌ | ❌ | ✅ |
+| Needs API key | ✅ | ✅ | ❌ optional |
+| Works offline | ❌ | ❌ | ✅ |
+| Install size | 200MB | 150MB | **16MB** |
+| Startup time | ~2s | ~2s | **< 50ms** |
+
+</div>
+
+---
+
+## ⌨️ Inside the chat
 
 | Key | Action |
 |-----|--------|
 | `Enter` | Send message |
 | `↑` / `↓` | Browse message history |
-| `Ctrl+A` | Jump to start of input |
-| `Ctrl+E` | Jump to end of input |
-| `Ctrl+U` | Clear input line |
+| `Ctrl+U` | Clear input |
 | `Ctrl+C` | Cancel / exit |
-
-### 💡 Slash Commands
 
 | Command | Description |
 |---------|-------------|
 | `/clear` | Clear conversation history |
-| `/cost` | Show token usage and estimated cost |
-| `/tools` | List all available tools |
-| `/model <name>` | Switch AI model mid-session |
-| `/help` | Show all slash commands |
+| `/cost` | Show token usage and cost |
+| `/model <name>` | Switch AI model |
+| `/help` | All commands |
 | `/exit` | Quit |
 
 ---
@@ -255,58 +221,41 @@ The AI asks your permission before using any tool:
 | `Bash` | Execute shell commands |
 | `Read` | Read files with line numbers |
 | `Write` | Create or overwrite files |
-| `Edit` | Precise find-and-replace inside files |
+| `Edit` | Find-and-replace inside files |
 | `Glob` | Find files by pattern (`**/*.go`) |
 | `Grep` | Search file contents with regex |
-| `LS` | List directory contents |
 | `WebFetch` | Fetch and read any URL |
-| `AskUser` | Ask you for input mid-task |
 | `TodoWrite` | Manage task checklists |
-| `Task*` | Create, list, and stop background tasks |
-| `NotebookEdit` | Edit Jupyter notebook cells |
 
 ---
 
-## 🤖 Choosing an Ollama Model
+## 🤖 Ollama Model Guide
 
 | Model | Size | Best for |
 |-------|------|----------|
-| `llama3.2` | 2 GB | General chat, quick answers |
-| `mistral` | 4 GB | Balanced speed and quality |
+| `llama3.2` | 2 GB | General use, quick answers |
+| `mistral` | 4 GB | Balanced speed + quality |
 | `qwen2.5-coder:7b` | 4 GB | **Coding tasks** ← recommended |
-| `deepseek-coder-v2` | 8 GB | Large codebases, complex reasoning |
+| `deepseek-coder-v2` | 8 GB | Large codebases |
 
-```bash
-ollama pull qwen2.5-coder    # download a model
-ollama list                  # see installed models
-```
-
-> 💡 **Pick by RAM:** 8 GB → `llama3.2` &nbsp;·&nbsp; 16 GB+ → `qwen2.5-coder`
+> 💡 8 GB RAM → `llama3.2` &nbsp;·&nbsp; 16 GB+ → `qwen2.5-coder`
 
 ---
 
 ## ⚙️ Configuration
 
-Create `~/.config/forge/config.yaml` *(optional)*:
+`~/.config/forge/config.yaml` *(optional)*:
 
 ```yaml
-provider: ollama                  # "ollama" or "anthropic" (auto-detected)
-
-ollama_host: http://localhost:11434
+provider: anthropic        # or "ollama"
 ollama_model: qwen2.5-coder
-
-# anthropic:
-# api_key: sk-ant-...
-# model: claude-opus-4-6
-
 max_tokens: 8096
-auto_approve: false               # true = skip permission prompts
+auto_approve: false
 ```
 
-Or use environment variables — no config file needed:
-
+Or env vars:
 ```bash
-FORGE_PROVIDER=ollama FORGE_OLLAMA_MODEL=mistral forge
+FORGE_PROVIDER=ollama forge review --staged
 ```
 
 ---
@@ -317,53 +266,33 @@ FORGE_PROVIDER=ollama FORGE_OLLAMA_MODEL=mistral forge
 Go/
 ├── cmd/forge/          entry point
 └── internal/
-    ├── api/            provider interface · Anthropic · Ollama
+    ├── api/            Anthropic + Ollama provider interface
     ├── engine/         agentic loop — send → stream → tools → repeat
     ├── tools/          16 built-in tools
     ├── tui/            Bubble Tea interactive REPL
-    ├── commands/       slash command registry
-    ├── config/         Viper config + auto-detection
-    ├── cost/           token usage + cost tracking
-    ├── history/        session persistence
-    ├── hooks/          pre/post tool hook pipeline
-    ├── mcp/            MCP protocol client
-    ├── memory/         auto-memory system
-    ├── permissions/    tool permission engine
-    ├── tasks/          background task registry
-    └── compact/        context compaction
+    └── ...
 ```
 
-**Built with:**
-[Bubble Tea](https://github.com/charmbracelet/bubbletea) &nbsp;·&nbsp;
-[Lip Gloss](https://github.com/charmbracelet/lipgloss) &nbsp;·&nbsp;
-[Cobra](https://github.com/spf13/cobra) &nbsp;·&nbsp;
-[Viper](https://github.com/spf13/viper) &nbsp;·&nbsp;
-[Anthropic Go SDK](https://github.com/anthropics/anthropic-sdk-go) &nbsp;·&nbsp;
-[MCP Go](https://github.com/mark3labs/mcp-go)
+Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea) · [Cobra](https://github.com/spf13/cobra) · [Anthropic Go SDK](https://github.com/anthropics/anthropic-sdk-go)
 
 ---
 
 ## 🤝 Contributing
 
-PRs and issues welcome.
-
 ```bash
 git clone https://github.com/sai-sridhar-repo-07/tarra-claw.git
-cd tarra-claw/Go
-go run ./cmd/forge
+cd tarra-claw/Go && go run ./cmd/forge
 ```
 
 ---
 
 <div align="center">
 
-MIT License &nbsp;·&nbsp; Free to use, modify, and distribute
+MIT License · Free to use, modify, and distribute
 
 <br/>
 
-[⬇️ Download Latest Release](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest) &nbsp;&nbsp;&nbsp; [⭐ Star on GitHub](https://github.com/sai-sridhar-repo-07/tarra-claw) &nbsp;&nbsp;&nbsp; [🐛 Report a Bug](https://github.com/sai-sridhar-repo-07/tarra-claw/issues)
-
-<br/>
+[⬇️ Download](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest) &nbsp;·&nbsp; [⭐ Star](https://github.com/sai-sridhar-repo-07/tarra-claw) &nbsp;·&nbsp; [🐛 Issues](https://github.com/sai-sridhar-repo-07/tarra-claw/issues)
 
 *Made with ❤️ in Go*
 
