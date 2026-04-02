@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/sai-sridhar-repo-07/tarra-claw/internal/api"
+	"github.com/sai-sridhar-repo-07/tarra-claw/internal/tasks"
 )
 
 // Tool is the interface every tool must implement.
@@ -59,6 +60,15 @@ func (r *Registry) All() []Tool {
 	return out
 }
 
+// Names returns all tool names.
+func (r *Registry) Names() []string {
+	names := make([]string, 0, len(r.tools))
+	for n := range r.tools {
+		names = append(names, n)
+	}
+	return names
+}
+
 // Definitions returns api.ToolDefinition for all tools.
 func (r *Registry) Definitions() []api.ToolDefinition {
 	all := r.All()
@@ -72,6 +82,9 @@ func (r *Registry) Definitions() []api.ToolDefinition {
 // DefaultRegistry builds and returns a registry with all built-in tools.
 func DefaultRegistry(workDir string) *Registry {
 	r := NewRegistry()
+	taskReg := tasks.NewRegistry()
+
+	// File system tools
 	r.Register(NewBashTool(workDir))
 	r.Register(NewReadTool())
 	r.Register(NewWriteTool())
@@ -79,5 +92,22 @@ func DefaultRegistry(workDir string) *Registry {
 	r.Register(NewGlobTool(workDir))
 	r.Register(NewGrepTool(workDir))
 	r.Register(NewLSTool(workDir))
+
+	// Web tools
+	r.Register(NewWebFetchTool())
+
+	// Interactive tools
+	r.Register(NewAskUserQuestionTool())
+
+	// Task management
+	r.Register(NewTodoWriteTool(workDir))
+	r.Register(NewTaskCreateTool(taskReg))
+	r.Register(NewTaskListTool(taskReg))
+	r.Register(NewTaskGetTool(taskReg))
+	r.Register(NewTaskStopTool(taskReg))
+
+	// Notebook
+	r.Register(NewNotebookEditTool())
+
 	return r
 }
