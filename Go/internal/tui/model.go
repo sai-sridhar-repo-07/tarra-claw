@@ -181,6 +181,10 @@ func (m *Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.input = ""
 		m.cursor = 0
 
+	case tea.KeySpace:
+		m.input = m.input[:m.cursor] + " " + m.input[m.cursor:]
+		m.cursor++
+
 	default:
 		if msg.Type == tea.KeyRunes {
 			m.input = m.input[:m.cursor] + string(msg.Runes) + m.input[m.cursor:]

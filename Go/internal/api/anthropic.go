@@ -36,7 +36,7 @@ func (p *AnthropicProvider) Stream(
 		params := anthropic.MessageNewParams{
 			Model:     anthropic.F(anthropic.Model(p.cfg.Model)),
 			MaxTokens: anthropic.F(int64(p.cfg.MaxTokens)),
-			System:    anthropic.F([]anthropic.TextBlockParam{{Text: anthropic.F(systemPrompt)}}),
+			System:    anthropic.F([]anthropic.TextBlockParam{{Type: anthropic.F(anthropic.TextBlockParamTypeText), Text: anthropic.F(systemPrompt)}}),
 			Messages:  anthropic.F(messages),
 		}
 
