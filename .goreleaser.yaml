@@ -4,11 +4,10 @@ project_name: claw
 
 before:
   hooks:
-    - sh -c "cd Go && go mod tidy"
+    - go mod tidy
 
 builds:
   - main: ./cmd/claw
-    dir: Go
     binary: claw
     env:
       - CGO_ENABLED=0
@@ -32,8 +31,8 @@ archives:
       - goos: windows
         formats: [zip]
     files:
-      - README.md
-      - LICENSE
+      - ../README.md
+      - ../LICENSE
 
 checksum:
   name_template: "claw_{{ .Version }}_checksums.txt"
@@ -53,11 +52,11 @@ release:
     Download the binary for your platform below, then:
 
     ```bash
-    # Mac example
+    # Mac (Apple Silicon)
     tar -xzf claw_{{.Version}}_darwin_arm64.tar.gz
     sudo mv claw /usr/local/bin/
 
-    # Free local AI (no API key)
+    # Free local AI — no API key needed
     brew install ollama && ollama serve &
     ollama pull llama3.2
     claw
