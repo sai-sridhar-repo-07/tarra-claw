@@ -8,9 +8,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var Version = "v0.1.0"
+
 var rootCmd = &cobra.Command{
-	Use:   "claw",
-	Short: "Tarra Claw — AI agent CLI. Works with Ollama (free) or Anthropic.",
+	Use:     "claw",
+	Version: Version,
+	Short:   "Tarra Claw — AI agent CLI. Works with Ollama (free) or Anthropic.",
 	Long: `Tarra Claw is an open-source AI coding agent CLI written in Go.
 
 Providers:

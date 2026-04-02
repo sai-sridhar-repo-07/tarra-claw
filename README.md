@@ -12,18 +12,18 @@
 
 ```bash
 # Mac (Apple Silicon — M1/M2/M3/M4)
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.0_darwin_arm64.tar.gz | tar xz && sudo mv claw /usr/local/bin/
+curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.0_darwin_arm64.tar.gz | tar xz && sudo mv claw_v0.1.0_darwin_arm64 /usr/local/bin/claw
 
 # Mac (Intel)
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.0_darwin_amd64.tar.gz | tar xz && sudo mv claw /usr/local/bin/
+curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.0_darwin_amd64.tar.gz | tar xz && sudo mv claw_v0.1.0_darwin_amd64 /usr/local/bin/claw
 
 # Linux (x64)
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.0_linux_amd64.tar.gz | tar xz && sudo mv claw /usr/local/bin/
+curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.1.0_linux_amd64.tar.gz | tar xz && sudo mv claw_v0.1.0_linux_amd64 /usr/local/bin/claw
 ```
 
 Verify it works:
 ```bash
-claw --version
+claw version
 ```
 
 ### Option 2 — Download manually
