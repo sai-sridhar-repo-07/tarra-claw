@@ -1,0 +1,29 @@
+# Binaries
+claw
+tarra-claw
+dist/
+*.exe
+*.out
+
+# Go
+vendor/
+go.sum
+
+# Config (may contain API keys)
+.env
+*.env
+config.yaml
+config.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+bin/
