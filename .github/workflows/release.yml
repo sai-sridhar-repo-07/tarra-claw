@@ -28,8 +28,8 @@ jobs:
           ls $GITHUB_WORKSPACE/Go
           echo "=== Go/cmd/ ==="
           ls $GITHUB_WORKSPACE/Go/cmd || echo "cmd/ missing!"
-          echo "=== Go/cmd/claw/ ==="
-          ls $GITHUB_WORKSPACE/Go/cmd/claw || echo "cmd/claw/ missing!"
+          echo "=== Go/cmd/forge/ ==="
+          ls $GITHUB_WORKSPACE/Go/cmd/forge || echo "cmd/forge/ missing!"
           echo "=== go.mod ==="
           cat $GITHUB_WORKSPACE/Go/go.mod
 
@@ -43,19 +43,19 @@ jobs:
           cd $GODIR
 
           echo "Building darwin/arm64..."
-          GOOS=darwin  GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_darwin_arm64  ./cmd/claw
+          GOOS=darwin  GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_darwin_arm64  ./cmd/forge
 
           echo "Building darwin/amd64..."
-          GOOS=darwin  GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_darwin_amd64  ./cmd/claw
+          GOOS=darwin  GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_darwin_amd64  ./cmd/forge
 
           echo "Building linux/amd64..."
-          GOOS=linux   GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_linux_amd64   ./cmd/claw
+          GOOS=linux   GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_linux_amd64   ./cmd/forge
 
           echo "Building linux/arm64..."
-          GOOS=linux   GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_linux_arm64   ./cmd/claw
+          GOOS=linux   GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_linux_arm64   ./cmd/forge
 
           echo "Building windows/amd64..."
-          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_windows_amd64.exe ./cmd/claw
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_windows_amd64.exe ./cmd/forge
 
           echo "Creating archives..."
           cd $DIST

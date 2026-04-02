@@ -9,7 +9,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/api"
+	"github.com/sai-sridhar-repo-07/forge/internal/api"
 )
 
 const (
@@ -67,7 +67,7 @@ func (t *WebFetchTool) Execute(ctx context.Context, input map[string]any) (strin
 	if err != nil {
 		return "", fmt.Errorf("invalid URL: %w", err)
 	}
-	req.Header.Set("User-Agent", "tarra-claw/0.1 (AI agent CLI)")
+	req.Header.Set("User-Agent", "forge/0.1 (AI agent CLI)")
 
 	resp, err := t.client.Do(req)
 	if err != nil {

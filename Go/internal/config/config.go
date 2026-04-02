@@ -45,7 +45,7 @@ func Init() {
 	viper.SetConfigType("yaml")
 
 	home, _ := os.UserHomeDir()
-	viper.AddConfigPath(filepath.Join(home, ".config", "tarra-claw"))
+	viper.AddConfigPath(filepath.Join(home, ".config", "forge"))
 	viper.AddConfigPath(".")
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("TARRA")
@@ -64,7 +64,7 @@ func Init() {
 	cwd, _ := os.Getwd()
 
 	apiKey := firstNonEmpty(viper.GetString("api_key"), os.Getenv("ANTHROPIC_API_KEY"))
-	provider := firstNonEmpty(viper.GetString("provider"), os.Getenv("TARRA_PROVIDER"))
+	provider := firstNonEmpty(viper.GetString("provider"), os.Getenv("FORGE_PROVIDER"))
 
 	// Auto-detect: if no API key, default to ollama
 	if provider == "" {

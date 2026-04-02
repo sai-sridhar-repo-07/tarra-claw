@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/config"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/engine"
+	"github.com/sai-sridhar-repo-07/forge/internal/config"
+	"github.com/sai-sridhar-repo-07/forge/internal/engine"
 	"github.com/spf13/cobra"
 )
 

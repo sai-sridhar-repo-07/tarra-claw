@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/api"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/tasks"
+	"github.com/sai-sridhar-repo-07/forge/internal/api"
+	"github.com/sai-sridhar-repo-07/forge/internal/tasks"
 )
 
 // TaskCreateTool creates a new task in the registry.

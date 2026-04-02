@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/api"
+	"github.com/sai-sridhar-repo-07/forge/internal/api"
 )
 
 // NotebookEditTool edits Jupyter notebook cells.

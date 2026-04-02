@@ -1,21 +1,21 @@
 <div align="center">
 
 ```
-████████╗ █████╗ ██████╗ ██████╗  █████╗      ██████╗██╗      █████╗ ██╗    ██╗
-   ██╔══╝██╔══██╗██╔══██╗██╔══██╗██╔══██╗    ██╔════╝██║     ██╔══██╗██║    ██║
-   ██║   ███████║██████╔╝██████╔╝███████║    ██║     ██║     ███████║██║ █╗ ██║
-   ██║   ██╔══██║██╔══██╗██╔══██╗██╔══██║    ██║     ██║     ██╔══██║██║███╗██║
-   ██║   ██║  ██║██║  ██║██║  ██║██║  ██║    ╚██████╗███████╗██║  ██║╚███╔███╔╝
-   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝
+███████╗ ██████╗ ██████╗  ██████╗ ███████╗
+██╔════╝██╔═══██╗██╔══██╗██╔════╝ ██╔════╝
+█████╗  ██║   ██║██████╔╝██║  ███╗█████╗
+██╔══╝  ██║   ██║██╔══██╗██║   ██║██╔══╝
+██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗
+╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝
 ```
 
 **AI coding agent for your terminal — built in Go**
 
-[![Build](https://github.com/sai-sridhar-repo-07/tarra-claw/actions/workflows/build.yml/badge.svg)](https://github.com/sai-sridhar-repo-07/tarra-claw/actions)
-[![Release](https://img.shields.io/github/v/release/sai-sridhar-repo-07/tarra-claw?color=6ee7b7&label=latest)](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest)
+[![Build](https://github.com/sai-sridhar-repo-07/forge/actions/workflows/build.yml/badge.svg)](https://github.com/sai-sridhar-repo-07/forge/actions)
+[![Release](https://img.shields.io/github/v/release/sai-sridhar-repo-07/forge?color=6ee7b7&label=latest)](https://github.com/sai-sridhar-repo-07/forge/releases/latest)
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-MIT-a78bfa)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/sai-sridhar-repo-07/tarra-claw?style=social)](https://github.com/sai-sridhar-repo-07/tarra-claw/stargazers)
+[![Stars](https://img.shields.io/github/stars/sai-sridhar-repo-07/forge?style=social)](https://github.com/sai-sridhar-repo-07/forge/stargazers)
 
 <br/>
 
@@ -32,7 +32,7 @@
 
 ---
 
-## ✨ Why Tarra Claw?
+## ✨ Why Forge?
 
 <table>
 <tr>
@@ -51,7 +51,7 @@
 
 <div align="center">
 
-|  | Claude Code | Copilot CLI | **Tarra Claw** |
+|  | Claude Code | Copilot CLI | **Forge** |
 |--|:--:|:--:|:--:|
 | Needs API key | ✅ | ✅ | ❌ **No** |
 | Works offline | ❌ | ❌ | ✅ **Yes** |
@@ -74,8 +74,8 @@
 <br/>
 
 ```bash
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.2.0_darwin_arm64.tar.gz \
-  | tar xz && sudo mv claw_v0.2.0_darwin_arm64 /usr/local/bin/claw
+curl -L https://github.com/sai-sridhar-repo-07/forge/releases/latest/download/forge_v0.2.0_darwin_arm64.tar.gz \
+  | tar xz && sudo mv forge_v0.2.0_darwin_arm64 /usr/local/bin/claw
 ```
 
 </details>
@@ -85,8 +85,8 @@ curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/downlo
 <br/>
 
 ```bash
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.2.0_darwin_amd64.tar.gz \
-  | tar xz && sudo mv claw_v0.2.0_darwin_amd64 /usr/local/bin/claw
+curl -L https://github.com/sai-sridhar-repo-07/forge/releases/latest/download/forge_v0.2.0_darwin_amd64.tar.gz \
+  | tar xz && sudo mv forge_v0.2.0_darwin_amd64 /usr/local/bin/claw
 ```
 
 </details>
@@ -96,8 +96,8 @@ curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/downlo
 <br/>
 
 ```bash
-curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/claw_v0.2.0_linux_amd64.tar.gz \
-  | tar xz && sudo mv claw_v0.2.0_linux_amd64 /usr/local/bin/claw
+curl -L https://github.com/sai-sridhar-repo-07/forge/releases/latest/download/forge_v0.2.0_linux_amd64.tar.gz \
+  | tar xz && sudo mv forge_v0.2.0_linux_amd64 /usr/local/bin/claw
 ```
 
 </details>
@@ -106,7 +106,7 @@ curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/downlo
 <summary>&nbsp;&nbsp;<b>🪟 &nbsp;Windows</b></summary>
 <br/>
 
-1. Download [`claw_v0.2.0_windows_amd64.zip`](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest)
+1. Download [`forge_v0.2.0_windows_amd64.zip`](https://github.com/sai-sridhar-repo-07/forge/releases/latest)
 2. Extract the zip
 3. Run `claw.exe` from any terminal
 
@@ -117,10 +117,10 @@ curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/downlo
 <br/>
 
 ```bash
-git clone https://github.com/sai-sridhar-repo-07/tarra-claw.git
-cd tarra-claw/Go
-go build -o claw ./cmd/claw
-sudo mv claw /usr/local/bin/
+git clone https://github.com/sai-sridhar-repo-07/forge.git
+cd forge/Go
+go build -o forge ./cmd/claw
+sudo mv forge /usr/local/bin/
 ```
 
 </details>
@@ -128,7 +128,7 @@ sudo mv claw /usr/local/bin/
 <br/>
 
 ```bash
-claw --help   # ✓ verify install
+forge --help   # ✓ verify install
 ```
 
 <br/>
@@ -164,14 +164,14 @@ export ANTHROPIC_API_KEY=sk-ant-...
 claw
 ```
 
-**Auto-detection** — Tarra Claw picks the right backend automatically:
+**Auto-detection** — Forge picks the right backend automatically:
 
 ```
 No ANTHROPIC_API_KEY set  →  Ollama  (free, local)
 ANTHROPIC_API_KEY is set  →  Claude  (Anthropic API)
 ```
 
-Force a provider anytime: `TARRA_PROVIDER=ollama claw`
+Force a provider anytime: `FORGE_PROVIDER=ollama claw`
 
 <br/>
 
@@ -181,18 +181,18 @@ Force a provider anytime: `TARRA_PROVIDER=ollama claw`
 
 ```bash
 claw                                     # open interactive chat
-claw run "explain what this repo does"   # one-shot task, auto-exits
-claw models                              # list available AI models
+forge run "explain what this repo does"   # one-shot task, auto-exits
+forge models                              # list available AI models
 ```
 
 ### 🔍 Unique Commands (not in Claude Code)
 
-**`claw review`** — AI reviews your git diff and finds bugs before you commit
+**`forge review`** — AI reviews your git diff and finds bugs before you commit
 
 ```bash
-claw review              # review all current changes
-claw review --staged     # review only staged changes
-claw review --branch main # compare your branch vs main
+forge review              # review all current changes
+forge review --staged     # review only staged changes
+forge review --branch main # compare your branch vs main
 ```
 
 Output:
@@ -209,11 +209,11 @@ Adds getUserInput() and constructs a SQL query from user input.
 ❌ Needs changes — has bugs or security issues that must be fixed
 ```
 
-**`claw commit`** — AI writes your commit message from staged changes
+**`forge commit`** — AI writes your commit message from staged changes
 
 ```bash
 git add .
-claw commit
+forge commit
 ```
 
 Output:
@@ -305,7 +305,7 @@ ollama list                  # see installed models
 
 ## ⚙️ Configuration
 
-Create `~/.config/tarra-claw/config.yaml` *(optional — everything works without it)*:
+Create `~/.config/forge/config.yaml` *(optional — everything works without it)*:
 
 ```yaml
 # Provider: "ollama" or "anthropic" (auto-detected if omitted)
@@ -326,7 +326,7 @@ auto_approve: false    # set true to skip permission prompts
 Or skip the file and use environment variables:
 
 ```bash
-TARRA_PROVIDER=ollama TARRA_OLLAMA_MODEL=mistral claw
+FORGE_PROVIDER=ollama FORGE_OLLAMA_MODEL=mistral claw
 ```
 
 <br/>
@@ -372,8 +372,8 @@ Go/
 Found a bug? Have an idea? PRs and issues are welcome.
 
 ```bash
-git clone https://github.com/sai-sridhar-repo-07/tarra-claw.git
-cd tarra-claw/Go
+git clone https://github.com/sai-sridhar-repo-07/forge.git
+cd forge/Go
 go run ./cmd/claw
 ```
 
@@ -387,7 +387,7 @@ MIT License &nbsp;·&nbsp; Free to use, modify, and distribute
 
 <br/>
 
-[⬇️ &nbsp; Download Latest Release](https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest) &nbsp;&nbsp;&nbsp; [⭐ &nbsp; Star on GitHub](https://github.com/sai-sridhar-repo-07/tarra-claw) &nbsp;&nbsp;&nbsp; [🐛 &nbsp; Report a Bug](https://github.com/sai-sridhar-repo-07/tarra-claw/issues)
+[⬇️ &nbsp; Download Latest Release](https://github.com/sai-sridhar-repo-07/forge/releases/latest) &nbsp;&nbsp;&nbsp; [⭐ &nbsp; Star on GitHub](https://github.com/sai-sridhar-repo-07/forge) &nbsp;&nbsp;&nbsp; [🐛 &nbsp; Report a Bug](https://github.com/sai-sridhar-repo-07/forge/issues)
 
 <br/>
 

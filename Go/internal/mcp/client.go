@@ -60,7 +60,7 @@ func (m *Manager) Connect(ctx context.Context, cfg ServerConfig) error {
 	initReq := mcp.InitializeRequest{}
 	initReq.Params.ProtocolVersion = mcp.LATEST_PROTOCOL_VERSION
 	initReq.Params.ClientInfo = mcp.Implementation{
-		Name:    "tarra-claw",
+		Name:    "forge",
 		Version: "0.1.0",
 	}
 

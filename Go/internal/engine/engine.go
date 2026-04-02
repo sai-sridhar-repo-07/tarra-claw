@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	anthropic "github.com/anthropics/anthropic-sdk-go"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/api"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/config"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/cost"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/tools"
+	"github.com/sai-sridhar-repo-07/forge/internal/api"
+	"github.com/sai-sridhar-repo-07/forge/internal/config"
+	"github.com/sai-sridhar-repo-07/forge/internal/cost"
+	"github.com/sai-sridhar-repo-07/forge/internal/tools"
 )
 
 // Engine orchestrates the AI query loop with tool execution.
@@ -58,7 +58,7 @@ func New(cfg *config.Config) (*Engine, error) {
 		provider = p
 	case "anthropic":
 		if cfg.APIKey == "" {
-			return nil, fmt.Errorf("ANTHROPIC_API_KEY not set.\n\nQuick fix:\n  export ANTHROPIC_API_KEY=sk-ant-...\n\nOr use Ollama (free, no key):\n  ollama serve & ollama pull llama3.2\n  TARRA_PROVIDER=ollama claw")
+			return nil, fmt.Errorf("ANTHROPIC_API_KEY not set.\n\nQuick fix:\n  export ANTHROPIC_API_KEY=sk-ant-...\n\nOr use Ollama (free, no key):\n  ollama serve & ollama pull llama3.2\n  FORGE_PROVIDER=ollama claw")
 		}
 		provider, err = api.NewAnthropic(cfg)
 		if err != nil {

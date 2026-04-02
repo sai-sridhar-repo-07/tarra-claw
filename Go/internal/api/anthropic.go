@@ -5,7 +5,7 @@ import (
 
 	anthropic "github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/config"
+	"github.com/sai-sridhar-repo-07/forge/internal/config"
 )
 
 // AnthropicProvider calls the Anthropic Claude API.

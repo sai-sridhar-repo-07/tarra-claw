@@ -7,9 +7,9 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/commands"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/config"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/engine"
+	"github.com/sai-sridhar-repo-07/forge/internal/commands"
+	"github.com/sai-sridhar-repo-07/forge/internal/config"
+	"github.com/sai-sridhar-repo-07/forge/internal/engine"
 )
 
 // ── Styles ────────────────────────────────────────────────────────────────────

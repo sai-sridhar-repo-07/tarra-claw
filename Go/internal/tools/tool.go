@@ -3,8 +3,8 @@ package tools
 import (
 	"context"
 
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/api"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/tasks"
+	"github.com/sai-sridhar-repo-07/forge/internal/api"
+	"github.com/sai-sridhar-repo-07/forge/internal/tasks"
 )
 
 // Tool is the interface every tool must implement.

@@ -3,31 +3,36 @@ package cli
 import (
 	"fmt"
 
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/api"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/config"
+	"github.com/sai-sridhar-repo-07/forge/internal/api"
+	"github.com/sai-sridhar-repo-07/forge/internal/config"
 	"github.com/spf13/cobra"
 )
 
-var Version = "v0.1.0"
+var Version = "v0.3.0"
 
 var rootCmd = &cobra.Command{
-	Use:     "claw",
+	Use:     "forge",
 	Version: Version,
-	Short:   "Tarra Claw — AI agent CLI. Works with Ollama (free) or Anthropic.",
-	Long: `Tarra Claw is an open-source AI coding agent CLI written in Go.
+	Short:   "Forge — AI coding agent. Free with Ollama or Anthropic Claude.",
+	Long: `Forge is an open-source AI coding agent CLI written in Go.
 
-Providers:
-  ollama     Free, local, no API key (default when ANTHROPIC_API_KEY is not set)
-  anthropic  Claude API (requires ANTHROPIC_API_KEY)
+Works free with Ollama (no API key) or with Anthropic Claude.
 
-Quick start with Ollama (free):
+Quick start — free with Ollama:
   brew install ollama && ollama serve &
   ollama pull llama3.2
-  claw
+  forge
 
-Quick start with Anthropic:
+Quick start — Anthropic Claude:
   export ANTHROPIC_API_KEY=sk-ant-...
-  claw`,
+  forge
+
+Commands:
+  forge            interactive AI chat
+  forge review     AI code review of your git diff
+  forge commit     AI writes your commit message
+  forge run        one-shot prompt, exits when done
+  forge models     list available models`,
 }
 
 func Execute() error {

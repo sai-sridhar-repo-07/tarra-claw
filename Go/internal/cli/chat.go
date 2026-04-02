@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/config"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/engine"
-	"github.com/sai-sridhar-repo-07/tarra-claw/internal/tui"
+	"github.com/sai-sridhar-repo-07/forge/internal/config"
+	"github.com/sai-sridhar-repo-07/forge/internal/engine"
+	"github.com/sai-sridhar-repo-07/forge/internal/tui"
 	"github.com/spf13/cobra"
 )
 

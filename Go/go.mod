@@ -1,4 +1,4 @@
-module github.com/sai-sridhar-repo-07/tarra-claw
+module github.com/sai-sridhar-repo-07/forge
 
 go 1.23
 
