@@ -1,5 +1,6 @@
-# Binaries
-claw
+# Binaries (only match root-level binary, not cmd/claw/ directory)
+/Go/claw
+/claw
 tarra-claw
 dist/
 *.exe

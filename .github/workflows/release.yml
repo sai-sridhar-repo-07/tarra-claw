@@ -20,33 +20,54 @@ jobs:
           cache: true
           cache-dependency-path: Go/go.sum
 
+      - name: Debug — show repo structure
+        run: |
+          echo "=== Workspace root ==="
+          ls $GITHUB_WORKSPACE
+          echo "=== Go/ ==="
+          ls $GITHUB_WORKSPACE/Go
+          echo "=== Go/cmd/ ==="
+          ls $GITHUB_WORKSPACE/Go/cmd || echo "cmd/ missing!"
+          echo "=== Go/cmd/claw/ ==="
+          ls $GITHUB_WORKSPACE/Go/cmd/claw || echo "cmd/claw/ missing!"
+          echo "=== go.mod ==="
+          cat $GITHUB_WORKSPACE/Go/go.mod
+
       - name: Build binaries
-        working-directory: Go
         run: |
           TAG=${GITHUB_REF_NAME}
-          mkdir -p ../dist
+          GODIR=$GITHUB_WORKSPACE/Go
+          DIST=$GITHUB_WORKSPACE/dist
+          mkdir -p $DIST
 
-          echo "Building for all platforms..."
+          cd $GODIR
 
-          GOOS=darwin  GOARCH=arm64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_darwin_arm64  ./cmd/claw
-          GOOS=darwin  GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_darwin_amd64  ./cmd/claw
-          GOOS=linux   GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_linux_amd64   ./cmd/claw
-          GOOS=linux   GOARCH=arm64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_linux_arm64   ./cmd/claw
-          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_windows_amd64.exe ./cmd/claw
+          echo "Building darwin/arm64..."
+          GOOS=darwin  GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_darwin_arm64  ./cmd/claw
+
+          echo "Building darwin/amd64..."
+          GOOS=darwin  GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_darwin_amd64  ./cmd/claw
+
+          echo "Building linux/amd64..."
+          GOOS=linux   GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_linux_amd64   ./cmd/claw
+
+          echo "Building linux/arm64..."
+          GOOS=linux   GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_linux_arm64   ./cmd/claw
+
+          echo "Building windows/amd64..."
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_windows_amd64.exe ./cmd/claw
 
           echo "Creating archives..."
-          cd ../dist
-
+          cd $DIST
           tar czf claw_${TAG}_darwin_arm64.tar.gz  claw_${TAG}_darwin_arm64
           tar czf claw_${TAG}_darwin_amd64.tar.gz  claw_${TAG}_darwin_amd64
           tar czf claw_${TAG}_linux_amd64.tar.gz   claw_${TAG}_linux_amd64
           tar czf claw_${TAG}_linux_arm64.tar.gz   claw_${TAG}_linux_arm64
           zip     claw_${TAG}_windows_amd64.zip     claw_${TAG}_windows_amd64.exe
-
           sha256sum *.tar.gz *.zip > claw_${TAG}_checksums.txt
 
-          echo "Built:"
-          ls -lh *.tar.gz *.zip *.txt
+          echo "Done:"
+          ls -lh $DIST
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -59,32 +80,22 @@ jobs:
 
             ### Install
 
-            **1. Download binary for your platform:**
-
             | Platform | File |
             |---|---|
-            | Mac (Apple Silicon M1/M2/M3) | `claw_${{ github.ref_name }}_darwin_arm64.tar.gz` |
+            | Mac (Apple Silicon) | `claw_${{ github.ref_name }}_darwin_arm64.tar.gz` |
             | Mac (Intel) | `claw_${{ github.ref_name }}_darwin_amd64.tar.gz` |
-            | Linux (x64) | `claw_${{ github.ref_name }}_linux_amd64.tar.gz` |
-            | Linux (ARM) | `claw_${{ github.ref_name }}_linux_arm64.tar.gz` |
+            | Linux x64 | `claw_${{ github.ref_name }}_linux_amd64.tar.gz` |
+            | Linux ARM | `claw_${{ github.ref_name }}_linux_arm64.tar.gz` |
             | Windows | `claw_${{ github.ref_name }}_windows_amd64.zip` |
 
-            **2. Install:**
             ```bash
+            # Extract and install (Mac example)
             tar -xzf claw_${{ github.ref_name }}_darwin_arm64.tar.gz
             sudo mv claw_${{ github.ref_name }}_darwin_arm64 /usr/local/bin/claw
-            ```
 
-            **3. Run free with Ollama (no API key):**
-            ```bash
+            # Free AI with Ollama (no API key)
             brew install ollama && ollama serve &
             ollama pull llama3.2
-            claw
-            ```
-
-            **Or with Anthropic Claude:**
-            ```bash
-            export ANTHROPIC_API_KEY=sk-ant-...
             claw
             ```
           files: |
