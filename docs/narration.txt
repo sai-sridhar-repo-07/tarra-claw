@@ -1,0 +1,23 @@
+Introducing Tarra Claw.
+
+Every developer has been there. You write code, it looks fine, you commit it — and later you find out it had a bug. A SQL injection vulnerability. An ignored error. A divide-by-zero crash waiting to happen.
+
+What if your terminal could catch that before you commit?
+
+Tarra Claw is an open source AI coding agent — built entirely in Go. It works like Claude Code, but with two major differences.
+
+First — it's completely free. It runs on Ollama, which means the AI runs one hundred percent on your own machine. No API key. No account. No cost. Ever.
+
+Second — it starts in under fifty milliseconds and installs as a single sixteen megabyte file. No Node.js. No npm install. Just download and run.
+
+But the real reason to use it — two commands nobody else has.
+
+Type claw review — and it reads your git diff, sends it to the AI, and gives you a full structured code review. It found three critical issues here: a divide by zero bug, an ignored file error, and a SQL injection vulnerability — all before a single line was committed.
+
+Type claw commit — and it reads your staged changes and writes the commit message for you. Proper format. Conventional commits. Done in seconds.
+
+And if you want a full AI coding agent — just type claw. An interactive chat opens in your terminal. Ask it to explain code, fix bugs, search files, run commands — it does all of it with your permission.
+
+No cloud. No account. No cost. Just AI, running on your machine.
+
+Tarra Claw. Download it free at github dot com slash sai-sridhar-repo-07 slash tarra-claw.
