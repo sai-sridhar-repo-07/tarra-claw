@@ -13,8 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: actions/setup-go@v5
         with:
@@ -22,12 +20,74 @@ jobs:
           cache: true
           cache-dependency-path: Go/go.sum
 
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+      - name: Build binaries
+        working-directory: Go
+        run: |
+          TAG=${GITHUB_REF_NAME}
+          mkdir -p ../dist
+
+          echo "Building for all platforms..."
+
+          GOOS=darwin  GOARCH=arm64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_darwin_arm64  ./cmd/claw
+          GOOS=darwin  GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_darwin_amd64  ./cmd/claw
+          GOOS=linux   GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_linux_amd64   ./cmd/claw
+          GOOS=linux   GOARCH=arm64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_linux_arm64   ./cmd/claw
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/claw_${TAG}_windows_amd64.exe ./cmd/claw
+
+          echo "Creating archives..."
+          cd ../dist
+
+          tar czf claw_${TAG}_darwin_arm64.tar.gz  claw_${TAG}_darwin_arm64
+          tar czf claw_${TAG}_darwin_amd64.tar.gz  claw_${TAG}_darwin_amd64
+          tar czf claw_${TAG}_linux_amd64.tar.gz   claw_${TAG}_linux_amd64
+          tar czf claw_${TAG}_linux_arm64.tar.gz   claw_${TAG}_linux_arm64
+          zip     claw_${TAG}_windows_amd64.zip     claw_${TAG}_windows_amd64.exe
+
+          sha256sum *.tar.gz *.zip > claw_${TAG}_checksums.txt
+
+          echo "Built:"
+          ls -lh *.tar.gz *.zip *.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          distribution: goreleaser
-          version: latest
-          args: release --clean
-          workdir: Go
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: "Tarra Claw ${{ github.ref_name }}"
+          body: |
+            ## Tarra Claw ${{ github.ref_name }}
+
+            AI agent CLI — works with **Ollama (free, no API key)** or Anthropic Claude.
+
+            ### Install
+
+            **1. Download binary for your platform:**
+
+            | Platform | File |
+            |---|---|
+            | Mac (Apple Silicon M1/M2/M3) | `claw_${{ github.ref_name }}_darwin_arm64.tar.gz` |
+            | Mac (Intel) | `claw_${{ github.ref_name }}_darwin_amd64.tar.gz` |
+            | Linux (x64) | `claw_${{ github.ref_name }}_linux_amd64.tar.gz` |
+            | Linux (ARM) | `claw_${{ github.ref_name }}_linux_arm64.tar.gz` |
+            | Windows | `claw_${{ github.ref_name }}_windows_amd64.zip` |
+
+            **2. Install:**
+            ```bash
+            tar -xzf claw_${{ github.ref_name }}_darwin_arm64.tar.gz
+            sudo mv claw_${{ github.ref_name }}_darwin_arm64 /usr/local/bin/claw
+            ```
+
+            **3. Run free with Ollama (no API key):**
+            ```bash
+            brew install ollama && ollama serve &
+            ollama pull llama3.2
+            claw
+            ```
+
+            **Or with Anthropic Claude:**
+            ```bash
+            export ANTHROPIC_API_KEY=sk-ant-...
+            claw
+            ```
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/*_checksums.txt
