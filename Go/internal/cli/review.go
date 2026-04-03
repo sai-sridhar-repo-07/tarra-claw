@@ -131,7 +131,8 @@ func runCommit(cmd *cobra.Command, args []string) error {
 	// Also get list of changed files for context
 	files, _ := gitOutput("git", "diff", "--staged", "--name-only")
 
-	fmt.Println("Generating commit message...\n")
+	fmt.Println("Generating commit message...")
+	fmt.Println()
 
 	prompt := fmt.Sprintf(`You are an expert at writing git commit messages.
 
