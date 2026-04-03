@@ -20,19 +20,6 @@ jobs:
           cache: true
           cache-dependency-path: Go/go.sum
 
-      - name: Debug — show repo structure
-        run: |
-          echo "=== Workspace root ==="
-          ls $GITHUB_WORKSPACE
-          echo "=== Go/ ==="
-          ls $GITHUB_WORKSPACE/Go
-          echo "=== Go/cmd/ ==="
-          ls $GITHUB_WORKSPACE/Go/cmd || echo "cmd/ missing!"
-          echo "=== Go/cmd/forge/ ==="
-          ls $GITHUB_WORKSPACE/Go/cmd/forge || echo "cmd/forge/ missing!"
-          echo "=== go.mod ==="
-          cat $GITHUB_WORKSPACE/Go/go.mod
-
       - name: Build binaries
         run: |
           TAG=${GITHUB_REF_NAME}
@@ -43,28 +30,28 @@ jobs:
           cd $GODIR
 
           echo "Building darwin/arm64..."
-          GOOS=darwin  GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_darwin_arm64  ./cmd/forge
+          GOOS=darwin  GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/forge_${TAG}_darwin_arm64  ./cmd/forge
 
           echo "Building darwin/amd64..."
-          GOOS=darwin  GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_darwin_amd64  ./cmd/forge
+          GOOS=darwin  GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/forge_${TAG}_darwin_amd64  ./cmd/forge
 
           echo "Building linux/amd64..."
-          GOOS=linux   GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_linux_amd64   ./cmd/forge
+          GOOS=linux   GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/forge_${TAG}_linux_amd64   ./cmd/forge
 
           echo "Building linux/arm64..."
-          GOOS=linux   GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_linux_arm64   ./cmd/forge
+          GOOS=linux   GOARCH=arm64 go build -ldflags="-s -w" -o $DIST/forge_${TAG}_linux_arm64   ./cmd/forge
 
           echo "Building windows/amd64..."
-          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/claw_${TAG}_windows_amd64.exe ./cmd/forge
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o $DIST/forge_${TAG}_windows_amd64.exe ./cmd/forge
 
           echo "Creating archives..."
           cd $DIST
-          tar czf claw_${TAG}_darwin_arm64.tar.gz  claw_${TAG}_darwin_arm64
-          tar czf claw_${TAG}_darwin_amd64.tar.gz  claw_${TAG}_darwin_amd64
-          tar czf claw_${TAG}_linux_amd64.tar.gz   claw_${TAG}_linux_amd64
-          tar czf claw_${TAG}_linux_arm64.tar.gz   claw_${TAG}_linux_arm64
-          zip     claw_${TAG}_windows_amd64.zip     claw_${TAG}_windows_amd64.exe
-          sha256sum *.tar.gz *.zip > claw_${TAG}_checksums.txt
+          tar czf forge_${TAG}_darwin_arm64.tar.gz  forge_${TAG}_darwin_arm64
+          tar czf forge_${TAG}_darwin_amd64.tar.gz  forge_${TAG}_darwin_amd64
+          tar czf forge_${TAG}_linux_amd64.tar.gz   forge_${TAG}_linux_amd64
+          tar czf forge_${TAG}_linux_arm64.tar.gz   forge_${TAG}_linux_arm64
+          zip     forge_${TAG}_windows_amd64.zip     forge_${TAG}_windows_amd64.exe
+          sha256sum *.tar.gz *.zip > forge_${TAG}_checksums.txt
 
           echo "Done:"
           ls -lh $DIST
@@ -72,31 +59,33 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "Tarra Claw ${{ github.ref_name }}"
+          name: "Forge ${{ github.ref_name }}"
           body: |
-            ## Tarra Claw ${{ github.ref_name }}
+            ## Forge ${{ github.ref_name }}
 
-            AI agent CLI — works with **Ollama (free, no API key)** or Anthropic Claude.
+            AI coding agent — catch bugs before you commit. Works with Anthropic Claude or free with Ollama.
 
             ### Install
 
             | Platform | File |
             |---|---|
-            | Mac (Apple Silicon) | `claw_${{ github.ref_name }}_darwin_arm64.tar.gz` |
-            | Mac (Intel) | `claw_${{ github.ref_name }}_darwin_amd64.tar.gz` |
-            | Linux x64 | `claw_${{ github.ref_name }}_linux_amd64.tar.gz` |
-            | Linux ARM | `claw_${{ github.ref_name }}_linux_arm64.tar.gz` |
-            | Windows | `claw_${{ github.ref_name }}_windows_amd64.zip` |
+            | Mac Apple Silicon (M1/M2/M3) | `forge_${{ github.ref_name }}_darwin_arm64.tar.gz` |
+            | Mac Intel | `forge_${{ github.ref_name }}_darwin_amd64.tar.gz` |
+            | Linux x64 | `forge_${{ github.ref_name }}_linux_amd64.tar.gz` |
+            | Linux ARM | `forge_${{ github.ref_name }}_linux_arm64.tar.gz` |
+            | Windows | `forge_${{ github.ref_name }}_windows_amd64.zip` |
 
+            ### Quick install (Mac Apple Silicon)
             ```bash
-            # Extract and install (Mac example)
-            tar -xzf claw_${{ github.ref_name }}_darwin_arm64.tar.gz
-            sudo mv claw_${{ github.ref_name }}_darwin_arm64 /usr/local/bin/claw
+            curl -L https://github.com/sai-sridhar-repo-07/tarra-claw/releases/latest/download/forge_${{ github.ref_name }}_darwin_arm64.tar.gz \
+              | tar xz && sudo mv forge_${{ github.ref_name }}_darwin_arm64 /usr/local/bin/forge
+            ```
 
-            # Free AI with Ollama (no API key)
-            brew install ollama && ollama serve &
-            ollama pull llama3.2
-            claw
+            ### Usage
+            ```bash
+            forge review --staged   # AI reviews your git diff for bugs
+            forge commit            # AI writes your commit message
+            forge                   # full interactive AI coding agent
             ```
           files: |
             dist/*.tar.gz
